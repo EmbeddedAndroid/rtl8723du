@@ -1,13 +1,13 @@
 $(info echo "WARNING: This driver is obsolete. Use http://github.com/lwfinger/rtw88.git instead")
-EXTRA_CFLAGS += $(USER_EXTRA_CFLAGS)
-EXTRA_CFLAGS += -O1
+ccflags-y += $(USER_EXTRA_CFLAGS)
+ccflags-y += -O1
 
 GCC_VER_49 := $(shell echo `$(CC) -dumpversion | cut -f1-2 -d.` \>= 4.9 | bc )
 ifeq ($(GCC_VER_49),1)
-EXTRA_CFLAGS += -Wno-date-time	# Fix compile error && warning on gcc 4.9 and later
+ccflags-y += -Wno-date-time	# Fix compile error && warning on gcc 4.9 and later
 endif
 
-EXTRA_CFLAGS += -I$(src)/include
+ccflags-y += -I$(M)/include
 
 #EXTRA_LDFLAGS += --strip-debug
 
@@ -60,10 +60,10 @@ _HAL_INTFS_FILES :=	hal/hal_intf.o \
 			hal/hal_usb_led.o
 
 
-EXTRA_CFLAGS += -I$(src)/platform
+ccflags-y += -I$(M)/platform
 _PLATFORM_FILES := platform/platform_ops.o
 
-EXTRA_CFLAGS += -I$(src)/hal
+ccflags-y += -I$(M)/hal
 
 include $(TopDIR)/hal/phydm/phydm.mk
 ########### HAL_RTL8723D #################################
@@ -96,48 +96,48 @@ _BTC_FILES += hal/halbtc8723d1ant.o \
 ########### END OF PATH  #################################
 
 ifeq ($(CONFIG_INTEL_WIDI), y)
-EXTRA_CFLAGS += -DCONFIG_INTEL_WIDI
+ccflags-y += -DCONFIG_INTEL_WIDI
 endif
 
 ifeq ($(CONFIG_EFUSE_CONFIG_FILE), y)
-EXTRA_CFLAGS += -DCONFIG_EFUSE_CONFIG_FILE
+ccflags-y += -DCONFIG_EFUSE_CONFIG_FILE
 
 #EFUSE_MAP_PATH
 USER_EFUSE_MAP_PATH ?=
 ifneq ($(USER_EFUSE_MAP_PATH),)
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"$(USER_EFUSE_MAP_PATH)\"
+ccflags-y += -DEFUSE_MAP_PATH=\"$(USER_EFUSE_MAP_PATH)\"
 else
-EXTRA_CFLAGS += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_$(MODULE_NAME).map\"
+ccflags-y += -DEFUSE_MAP_PATH=\"/system/etc/wifi/wifi_efuse_$(MODULE_NAME).map\"
 endif
 
 #WIFIMAC_PATH
 USER_WIFIMAC_PATH ?=
 ifneq ($(USER_WIFIMAC_PATH),)
-EXTRA_CFLAGS += -DWIFIMAC_PATH=\"$(USER_WIFIMAC_PATH)\"
+ccflags-y += -DWIFIMAC_PATH=\"$(USER_WIFIMAC_PATH)\"
 else
-EXTRA_CFLAGS += -DWIFIMAC_PATH=\"/data/wifimac.txt\"
+ccflags-y += -DWIFIMAC_PATH=\"/data/wifimac.txt\"
 endif
 
 endif
 
 ifeq ($(CONFIG_LOAD_PHY_PARA_FROM_FILE), y)
-EXTRA_CFLAGS += -DCONFIG_LOAD_PHY_PARA_FROM_FILE
+ccflags-y += -DCONFIG_LOAD_PHY_PARA_FROM_FILE
 #EXTRA_CFLAGS += -DREALTEK_CONFIG_PATH_WITH_IC_NAME_FOLDER
-EXTRA_CFLAGS += -DREALTEK_CONFIG_PATH=\"/lib/firmware/\"
+ccflags-y += -DREALTEK_CONFIG_PATH=\"/lib/firmware/\"
 endif
 
 ifeq ($(CONFIG_RTW_NAPI), y)
-EXTRA_CFLAGS += -DCONFIG_RTW_NAPI
+ccflags-y += -DCONFIG_RTW_NAPI
 endif
 
 ifeq ($(CONFIG_RTW_WIFI_HAL), y)
-EXTRA_CFLAGS += -DCONFIG_RTW_WIFI_HAL
+ccflags-y += -DCONFIG_RTW_WIFI_HAL
 endif
 
-EXTRA_CFLAGS += -DCONFIG_RTW_DEBUG
-EXTRA_CFLAGS += -DRTW_LOG_LEVEL=$(CONFIG_RTW_LOG_LEVEL)
+ccflags-y += -DCONFIG_RTW_DEBUG
+ccflags-y += -DRTW_LOG_LEVEL=$(CONFIG_RTW_LOG_LEVEL)
 
-EXTRA_CFLAGS += -DDM_ODM_SUPPORT_TYPE=0x04
+ccflags-y += -DDM_ODM_SUPPORT_TYPE=0x04
 
 SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ | sed -e s/ppc/powerpc/ | sed -e s/armv.l/arm/)
 ARCH ?= $(SUBARCH)

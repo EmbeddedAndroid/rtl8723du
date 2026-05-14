@@ -5,6 +5,22 @@
 #define __OSDEP_LINUX_SERVICE_H_
 
 #include <linux/version.h>
+
+/* Kernel 6.16 removed two deprecated names that this driver still
+ * uses verbatim. The replacements have existed since 6.2
+ * (timer_delete_sync) and 6.16 (timer_container_of), but the old
+ * spellings worked on every kernel we support up to 6.15. */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
+#include <linux/timer.h>
+#ifndef del_timer_sync
+#define del_timer_sync(t) timer_delete_sync(t)
+#endif
+#ifndef from_timer
+#define from_timer(var, callback_timer, timer_fieldname) \
+	timer_container_of(var, callback_timer, timer_fieldname)
+#endif
+#endif
+
 #include <linux/spinlock.h>
 #include <linux/compiler.h>
 #include <linux/kernel.h>
