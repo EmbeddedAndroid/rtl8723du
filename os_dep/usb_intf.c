@@ -21,11 +21,18 @@ static int rtw_resume(struct usb_interface *intf);
 static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device_id *pdid);
 static void rtw_dev_remove(struct usb_interface *pusb_intf);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0))
+static void rtw_dev_shutdown(struct usb_interface *usb_intf)
+{
+	struct dvobj_priv *dvobj = NULL;
+	struct adapter *adapter = NULL;
+#else
 static void rtw_dev_shutdown(struct device *dev)
 {
 	struct usb_interface *usb_intf = container_of(dev, struct usb_interface, dev);
 	struct dvobj_priv *dvobj = NULL;
 	struct adapter *adapter = NULL;
+#endif
 
 	RTW_INFO("%s\n", __func__);
 
@@ -149,7 +156,11 @@ static struct rtw_usb_drv usb_drv = {
 	.usbdrv.supports_autosuspend = 1,
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0))
+	/* struct usb_driver.drvwrap was removed in kernel 6.8; .shutdown
+	 * is now a direct member taking struct usb_interface *. */
+	.usbdrv.shutdown = rtw_dev_shutdown,
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19))
 	.usbdrv.drvwrap.driver.shutdown = rtw_dev_shutdown,
 #else
 	.usbdrv.driver.shutdown = rtw_dev_shutdown,
