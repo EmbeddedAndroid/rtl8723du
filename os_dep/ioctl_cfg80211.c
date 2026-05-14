@@ -173,7 +173,9 @@ u8 rtw_cfg80211_ch_switch_notify(struct adapter *adapter, u8 ch, u8 bw, u8 offse
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 19, 2)
 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef);
-#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0) && \
+       LINUX_VERSION_CODE <  KERNEL_VERSION(6, 9, 0))
+	/* 6.3..6.8 had the extra u16 punct_bitmap; reverted in 6.9. */
 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0, 0);
 #else
 	cfg80211_ch_switch_notify(adapter->pnetdev, &chdef, 0);
